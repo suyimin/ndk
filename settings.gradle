@@ -1,2 +1,5 @@
 include ':app'
 include ':native'
+include ':classic-teapot'
+include ':more-teapots'
+include ':choreographer-30fps'
