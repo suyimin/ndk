@@ -21,7 +21,7 @@ native是一个非常简单的纯原生应用示例，不包含任何 Java 源�
 android:hasCode="false"><br>
 下一行代码声明 NativeActivity 类。<br>
 \<activity android:name="android.app.NativeActivity"<br>
-最后，清单删掉开头的 lib 和末尾的 .so 扩展名，指定 android:value 作为要构建的共享库的名称。 此值必须与 Android.mk 中 LOCAL_MODULE 的名称相同。<br>
+最后，清单删掉开头的 lib 和末尾的 .so 扩展名，指定 android:value 作为要构建的共享库的名称。 此值必须与 CMakeLists.txt中 add_library 中配置的名称相同。<br>
 \<meta-data android:name="android.app.lib_name"
         android:value="native-activity" />
 
