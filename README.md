@@ -16,4 +16,12 @@ JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐�
 
 ### native
 native是一个非常简单的纯原生应用示例，不包含任何 Java 源代码。
+以下代码行将 android:hasCode 声明为 false，因为此应用仅包含原生代码 – 没有 Java 代码。
+<application android:label="@string/app_name"
+android:hasCode="false">
+下一行代码声明 NativeActivity 类。
+<activity android:name="android.app.NativeActivity"
+最后，清单删掉开头的 lib 和末尾的 .so 扩展名，指定 android:value 作为要构建的共享库的名称。 此值必须与 Android.mk 中 LOCAL_MODULE 的名称相同。
+<meta-data android:name="android.app.lib_name"
+        android:value="native-activity" />
 
