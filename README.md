@@ -14,6 +14,9 @@ app是jni示例。
 
 JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐式 this 对象的指针。
 
+### classic-teapot more-teapots choreographer-30fps
+classic-teapot more-teapots choreographer-30fps是3个3D茶壶的示例。
+
 ### native
 native是一个非常简单的纯原生应用示例，不包含任何 Java 源代码。
 以下代码行将 android:hasCode 声明为 false，因为此应用仅包含原生代码 – 没有 Java 代码。<br>
