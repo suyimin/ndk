@@ -153,7 +153,7 @@ public class ChoreographerNativeActivity extends NativeActivity
                 _activity.setContentView(mainLayout, params);
 
                 // Show our UI over NativeActivity window
-                _popupWindow.showAtLocation(mainLayout, Gravity.TOP | Gravity.START, 10, 10);
+                _popupWindow.showAtLocation(mainLayout, Gravity.TOP | Gravity.START, 100, 100);
                 _popupWindow.update();
 
                 _label = (TextView)popupView.findViewById(R.id.textViewFPS);

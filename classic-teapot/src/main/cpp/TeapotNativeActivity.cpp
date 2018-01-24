@@ -354,6 +354,7 @@ void Engine::TransformPosition(ndk_helper::Vec2& vec) {
         ndk_helper::Vec2(1.f, 1.f);
 }
 
+//回调至 Java 端，更新 UI 显示。
 void Engine::ShowUI() {
   JNIEnv* jni;
   app_->activity->vm->AttachCurrentThread(&jni, NULL);
@@ -367,6 +368,7 @@ void Engine::ShowUI() {
   return;
 }
 
+//回调至 Java 端，在原生端渲染的屏幕上叠加绘制一个文本框，并在其中显示帧数。
 void Engine::UpdateFPS(float fFPS) {
   JNIEnv* jni;
   app_->activity->vm->AttachCurrentThread(&jni, NULL);

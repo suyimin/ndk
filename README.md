@@ -14,12 +14,16 @@ app是jni示例。
 
 JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐式 this 对象的指针。
 
+
 ### classic-teapot more-teapots choreographer-30fps
-classic-teapot、 more-teapots、 choreographer-30fps是3个3D茶壶的示例。<br>
+* classic-teapot 普通3D茶壶的示例。<br>
+* more-teapots 自动旋转的3D茶壶的阵列示例。<br>
+* choreographer-30fps 限制最高帧率为30fps的3D茶壶的示例。<br>
 此示例展示 ndk_helper 帮助程序类，其中包含的许多原生帮助程序函数是以原生应用的形式实现游戏和类似应用所必需的。 此类提供：<br>
 * 用于处理某些 NDK 特有行为的抽象层 GLContext。<br>
 * 虽然很有用，但 NDK 中却不存在的一些帮助程序函数（例如，点按侦测）。<br>
 * 供 JNI 用于调用平台功能（例如，材质加载）的包装器。
+
 
 ### native
 native是一个非常简单的纯原生应用示例，不包含任何 Java 源代码。
