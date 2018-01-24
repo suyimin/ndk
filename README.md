@@ -1,5 +1,8 @@
 # ndk
 
+>对JNI不了解的同学，请看
+[JNI](https://github.com/suyimin/ndk/blob/master/jni.md)
+
 ### app
 app是jni示例。
 
@@ -18,7 +21,7 @@ JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐�
 ### classic-teapot more-teapots choreographer-30fps
 * classic-teapot 普通3D茶壶的示例。<br>
 * more-teapots 自动旋转的3D茶壶的阵列示例。<br>
-* choreographer-30fps 限制最高帧率为30fps的3D茶壶的示例。<br>
+* choreographer-30fps 限制最高帧率为30fps的3D茶壶的示例。<br><br>
 此示例展示 ndk_helper 帮助程序类，其中包含的许多原生帮助程序函数是以原生应用的形式实现游戏和类似应用所必需的。 此类提供：<br>
 * 用于处理某些 NDK 特有行为的抽象层 GLContext。<br>
 * 虽然很有用，但 NDK 中却不存在的一些帮助程序函数（例如，点按侦测）。<br>
