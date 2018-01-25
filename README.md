@@ -2,8 +2,11 @@
 
 Ndk demos，use the NDK and CMake to compile C and C++ code into a native library.
 
-对JNI不了解的同学，请看
+对JNI不了解的同学，请移步
 [JNI](https://github.com/suyimin/ndk/blob/master/jni.md)
+
+对CMake不了解的同学，请移步
+[CMake](https://github.com/suyimin/ndk/blob/master/CMake.md)
 
 ### app
 app是jni示例。
