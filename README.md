@@ -51,3 +51,8 @@ audio-echo、 native-audio 是OpenSL ES 的 NDK 实现的示例。<br>
 audio-echo是一个原生的回声应用。<br>
 native-audio是一个原生的录音音频播放器。<br>
 
+### bitmap-plasma、native-plasma
+bitmap-plasma、native-plasma 是C生成的等离子表面应用示例。
+bitmap-plasma 使用了java里面的View和Bitmap。
+native-plasma 是一个纯原生应用。
+
