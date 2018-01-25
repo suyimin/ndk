@@ -23,7 +23,7 @@ MainActivity.onCreate() 调用 stringFromJNI()，这将返回“Hello from C++�
 >如果您想要验证 Gradle 是否已将原生库打包到 APK 中，可以使用 APK 分析器：<br>
 >选择 Build > Analyze APK。<br>
 >从 app/build/outputs/apk/ 目录中选择 APK 并点击 OK。<br>
->您会在 APK 分析器窗口的 lib/<ABI>/ 下看到 libnative-lib.so。<br>
+>您会在 APK 分析器窗口的 lib/\<ABI>/ 下看到 libnative-lib.so。<br>
 
 ### 向现有项目添加 C/C++ 代码
 如果您希望向现有项目添加原生代码，请执行以下步骤：<br>
