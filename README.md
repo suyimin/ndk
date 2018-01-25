@@ -82,3 +82,7 @@ Api27新增加的 NeuralNetworks Api 示例。
 
 ### webp
 利用webp显示图片的纯原生应用示例。
+
+### Kotlin-jni
+Kotlin 中 jni 的使用示例：[Kotlin-jni](https://github.com/suyimin/Kotlin-jni)
+
