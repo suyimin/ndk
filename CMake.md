@@ -55,15 +55,12 @@ MainActivity.onCreate() 调用 stringFromJNI()，这将返回“Hello from C++�
 \# Sets the minimum version of CMake required to build your native library.<br>
 \# This ensures that a certain set of CMake features is available to<br>
 \# your build.<br>
-<br>
 cmake_minimum_required(VERSION 3.4.1)<br>
-<br>
 \# Specifies a library name, specifies whether the library is STATIC or<br>
 \# SHARED, and provides relative paths to the source code. You can<br>
 \# define multiple libraries by adding multiple add.library() commands,<br>
 \# and CMake builds them for you. When you build your app, Gradle<br>
 \# automatically packages shared libraries with your APK.<br>
-<br>
 add_library( # Specifies the name of the library.<br>
              native-lib<br>
              # Sets the library as a shared library.<br>
@@ -71,15 +68,12 @@ add_library( # Specifies the name of the library.<br>
              # Provides a relative path to your source file(s).<br>
              src/main/cpp/native-lib.cpp )<br>
 使用 add_library() 向您的 CMake 构建脚本添加源文件或库时，Android Studio 还会在您同步项目后在 Project 视图下显示关联的标头文件。不过，为了确保 CMake 可以在编译时定位您的标头文件，您需要将 include_directories() 命令添加到 CMake 构建脚本中并指定标头的路径：<br>
-<br>
 add_library(...)<br>
-<br>
 \# Specifies a path to native header files.<br>
 include_directories(src/main/cpp/include/)<br>
 CMake 使用以下规范来为库文件命名：<br>
 lib库名称.so<br>
 例如，如果您在构建脚本中指定“native-lib”作为共享库的名称，CMake 将创建一个名称为 libnative-lib.so 的文件。不过，在 Java 代码中加载此库时，请使用您在 CMake 构建脚本中指定的名称：<br>
-<br>
 static {<br>
     System.loadLibrary(“native-lib”);<br>
 }<br>
@@ -87,67 +81,49 @@ static {<br>
 Android Studio 会自动将源文件和标头添加到 Project 窗格的 cpp 组中。使用多个 add_library() 命令，您可以为 CMake 定义要从其他源文件构建的更多库。<br>
 
 ### 添加 NDK API
-Android NDK 提供了一套实用的原生 API 和库。通过将 NDK 库包含到项目的 CMakeLists.txt 脚本文件中，您可以使用这些 API 中的任意一种。
-
-预构建的 NDK 库已经存在于 Android 平台上，因此，您无需再构建或将其打包到 APK 中。由于 NDK 库已经是 CMake 搜索路径的一部分，您甚至不需要在您的本地 NDK 安装中指定库的位置 - 只需要向 CMake 提供您希望使用的库的名称，并将其关联到您自己的原生库。
-
-将 find_library() 命令添加到您的 CMake 构建脚本中以定位 NDK 库，并将其路径存储为一个变量。您可以使用此变量在构建脚本的其他部分引用 NDK 库。以下示例可以定位 Android 特定的日志支持库并将其路径存储在 log-lib 中：
-
-find_library( # Defines the name of the path variable that stores the
-              # location of the NDK library.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # CMake needs to locate.
-              log )
-为了确保您的原生库可以在 log 库中调用函数，您需要使用 CMake 构建脚本中的 target_link_libraries() 命令关联库：
-
-find_library(...)
-
-# Links your native library against one or more other native libraries.
-target_link_libraries( # Specifies the target library.
-                       native-lib
-
-                       # Links the log library to the target library.
-                       ${log-lib} )
-NDK 还以源代码的形式包含一些库，您在构建和关联到您的原生库时需要使用这些代码。您可以使用 CMake 构建脚本中的 add_library() 命令，将源代码编译到原生库中。要提供本地 NDK 库的路径，您可以使用 ANDROID_NDK 路径变量，Android Studio 会自动为您定义此变量。
-
-以下命令可以指示 CMake 构建 android_native_app_glue.c，后者会将 NativeActivity 生命周期事件和触摸输入置于静态库中并将静态库关联到 native-lib：
-
-add_library( app-glue
-             STATIC
-             ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c )
-
-# You need to link static libraries against your shared native library.
-target_link_libraries( native-lib app-glue ${log-lib} )
-添加其他预构建库
-添加预构建库与为 CMake 指定要构建的另一个原生库类似。不过，由于库已经预先构建，您需要使用 IMPORTED 标志告知 CMake 您只希望将库导入到项目中：
-
-add_library( imported-lib
-             SHARED
-             IMPORTED )
-然后，您需要使用 set_target_properties() 命令指定库的路径，如下所示。
-
-某些库为特定的 CPU 架构（或应用二进制接口 (ABI)）提供了单独的软件包，并将其组织到单独的目录中。此方法既有助于库充分利用特定的 CPU 架构，又能让您仅使用所需的库版本。要向 CMake 构建脚本中添加库的多个 ABI 版本，而不必为库的每个版本编写多个命令，您可以使用 ANDROID_ABI 路径变量。此变量使用 NDK 支持的一组默认 ABI，或者您手动配置 Gradle 而让其使用的一组经过筛选的 ABI。例如：
-
-add_library(...)
-set_target_properties( # Specifies the target library.
-                       imported-lib
-
-                       # Specifies the parameter you want to define.
-                       PROPERTIES IMPORTED_LOCATION
-
-                       # Provides the path to the library you want to import.
-                       imported-lib/src/${ANDROID_ABI}/libimported-lib.so )
-为了确保 CMake 可以在编译时定位您的标头文件，您需要使用 include_directories() 命令，并包含标头文件的路径：
-
-include_directories( imported-lib/include/ )
-注：如果您希望打包一个并不是构建时依赖项的预构建库（例如在添加属于 imported-lib 依赖项的预构建库时），则不需要执行以下说明来关联库。
-
-要将预构建库关联到您自己的原生库，请将其添加到 CMake 构建脚本的 target_link_libraries() 命令中：
-
-target_link_libraries( native-lib imported-lib app-glue ${log-lib} )
-在您构建应用时，Gradle 会自动将导入的库打包到 APK 中。您可以使用 APK 分析器验证 Gradle 将哪些库打包到您的 APK 中。如需了解有关 CMake 命令的详细信息，请参阅 CMake 文档。
+Android NDK 提供了一套实用的原生 API 和库。通过将 NDK 库包含到项目的 CMakeLists.txt 脚本文件中，您可以使用这些 API 中的任意一种。<br>
+预构建的 NDK 库已经存在于 Android 平台上，因此，您无需再构建或将其打包到 APK 中。由于 NDK 库已经是 CMake 搜索路径的一部分，您甚至不需要在您的本地 NDK 安装中指定库的位置 - 只需要向 CMake 提供您希望使用的库的名称，并将其关联到您自己的原生库。<br>
+将 find_library() 命令添加到您的 CMake 构建脚本中以定位 NDK 库，并将其路径存储为一个变量。您可以使用此变量在构建脚本的其他部分引用 NDK 库。以下示例可以定位 Android 特定的日志支持库并将其路径存储在 log-lib 中：<br>
+find_library( # Defines the name of the path variable that stores the<br>
+              \# location of the NDK library.<br>
+              log-lib<br>
+              \# Specifies the name of the NDK library that<br>
+              \# CMake needs to locate.<br>
+              log )<br>
+为了确保您的原生库可以在 log 库中调用函数，您需要使用 CMake 构建脚本中的 target_link_libraries() 命令关联库：<br>
+find_library(...)<br>
+\# Links your native library against one or more other native libraries.<br>
+target_link_libraries( # Specifies the target library.<br>
+                       native-lib<br>
+                       \# Links the log library to the target library.<br>
+                       \${log-lib} )<br>
+NDK 还以源代码的形式包含一些库，您在构建和关联到您的原生库时需要使用这些代码。您可以使用 CMake 构建脚本中的 add_library() 命令，将源代码编译到原生库中。要提供本地 NDK 库的路径，您可以使用 ANDROID_NDK 路径变量，Android Studio 会自动为您定义此变量。<br>
+以下命令可以指示 CMake 构建 android_native_app_glue.c，后者会将 NativeActivity 生命周期事件和触摸输入置于静态库中并将静态库关联到 native-lib：<br>
+add_library( app-glue<br>
+             STATIC<br>
+             \${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c )<br>
+\# You need to link static libraries against your shared native library.<br>
+target_link_libraries( native-lib app-glue ${log-lib} )<br>
+### 添加其他预构建库
+添加预构建库与为 CMake 指定要构建的另一个原生库类似。不过，由于库已经预先构建，您需要使用 IMPORTED 标志告知 CMake 您只希望将库导入到项目中：<br>
+add_library( imported-lib<br>
+             SHARED<br>
+             IMPORTED )<br>
+然后，您需要使用 set_target_properties() 命令指定库的路径，如下所示。<br>
+某些库为特定的 CPU 架构（或应用二进制接口 (ABI)）提供了单独的软件包，并将其组织到单独的目录中。此方法既有助于库充分利用特定的 CPU 架构，又能让您仅使用所需的库版本。要向 CMake 构建脚本中添加库的多个 ABI 版本，而不必为库的每个版本编写多个命令，您可以使用 ANDROID_ABI 路径变量。此变量使用 NDK 支持的一组默认 ABI，或者您手动配置 Gradle 而让其使用的一组经过筛选的 ABI。例如：<br>
+add_library(...)<br>
+set_target_properties( # Specifies the target library.<br>
+                       imported-lib<br>
+                       \# Specifies the parameter you want to define.<br>
+                       PROPERTIES IMPORTED_LOCATION<br>
+                       \# Provides the path to the library you want to import.<br>
+                       imported-lib/src/${ANDROID_ABI}/libimported-lib.so )<br>
+为了确保 CMake 可以在编译时定位您的标头文件，您需要使用 include_directories() 命令，并包含标头文件的路径：<br>
+include_directories( imported-lib/include/ )<br>
+注：如果您希望打包一个并不是构建时依赖项的预构建库（例如在添加属于 imported-lib 依赖项的预构建库时），则不需要执行以下说明来关联库。<br>
+要将预构建库关联到您自己的原生库，请将其添加到 CMake 构建脚本的 target_link_libraries() 命令中：<br>
+target_link_libraries( native-lib imported-lib app-glue ${log-lib} )<br>
+在您构建应用时，Gradle 会自动将导入的库打包到 APK 中。您可以使用 APK 分析器验证 Gradle 将哪些库打包到您的 APK 中。如需了解有关 CMake 命令的详细信息，请参阅 CMake 文档。<br>
 
 将 Gradle 关联到您的原生库
 要将 Gradle 关联到您的原生库，您需要提供一个指向 CMake 或 ndk-build 脚本文件的路径。在您构建应用时，Gradle 会以依赖项的形式运行 CMake 或 ndk-build，并将共享的库打包到您的 APK 中。Gradle 还使用构建脚本来了解要将哪些文件添加到您的 Android Studio 项目中，以便您可以从 Project 窗口访问这些文件。如果您的原生源文件没有构建脚本，则需要先创建 CMake 构建脚本，然后再继续。
