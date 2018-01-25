@@ -80,3 +80,5 @@ Api26新增加的 p3 显示图片和 sRGB 显示图片对比。
 ### nn_sample
 Api27新增加的 NeuralNetworks Api 示例。
 
+### webp
+利用webp显示图片的纯原生应用示例。
