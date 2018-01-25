@@ -46,3 +46,8 @@ android:hasCode="false"><br>
         android:value="native-activity" /><br>
 创建用于原生 Activity 的文件，并实现 ANativeActivity_onCreate 变量中指定的函数void android_main(struct android_app* state)。应用在原生 Activity 启动时会调用此函数。 此函数类似于 C/C++ 中的 main，用于接收 ANativeActivity 结构的指针，其中包含您需要写入的各个回调实现的函数指针。<br>
 
+### audio-echo native-audio
+audio-echo、 native-audio 是OpenSL ES 的 NDK 实现的示例。<br>
+audio-echo是一个原生的回声应用。<br>
+native-audio是一个原生的录音音频播放器。<br>
+
