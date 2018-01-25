@@ -71,3 +71,8 @@ OpenMAXAL、 java MediaPlayer、native MediaPlayer示例。
 ### native-codec
 OpenMAXAL mediandk 播放mp4示例。
 
+### camera-basic camera-texture
+本地照相机示例。
+
+
+
