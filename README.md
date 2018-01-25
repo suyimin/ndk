@@ -56,3 +56,9 @@ bitmap-plasma、native-plasma 是C生成的等离子表面应用示例。
 bitmap-plasma 使用了java里面的View和Bitmap。
 native-plasma 是一个纯原生应用。
 
+### endless-tunnel
+endless-tunnel(无尽的隧道)是一个纯原生游戏。
+
+### sensor-graph
+sensor-graph是利用感应器原生api获得加速度，OpenGL ES 2.0绘图的原生应用示例。
+
