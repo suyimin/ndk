@@ -52,16 +52,16 @@ MainActivity.onCreate() 调用 stringFromJNI()，这将返回“Hello from C++�
 注：您可以在所需的任意位置创建构建脚本。不过，在配置构建脚本时，原生源文件和库的路径将与构建脚本的位置相关。<br>
 输入“CMakeLists.txt”作为文件名并点击 OK。<br>
 现在，您可以添加 CMake 命令，对您的构建脚本进行配置。要指示 CMake 从原生源代码创建一个原生库，请将 cmake_minimum_required() 和 add_library() 命令添加到您的构建脚本中：<br>
-\# Sets the minimum version of CMake required to build your native library.<br>
-\# This ensures that a certain set of CMake features is available to<br>
-\# your build.<br>
-cmake_minimum_required(VERSION 3.4.1)<br>
-\# Specifies a library name, specifies whether the library is STATIC or<br>
-\# SHARED, and provides relative paths to the source code. You can<br>
-\# define multiple libraries by adding multiple add.library() commands,<br>
-\# and CMake builds them for you. When you build your app, Gradle<br>
-\# automatically packages shared libraries with your APK.<br>
-add_library( # Specifies the name of the library.<br>
+>\# Sets the minimum version of CMake required to build your native library.<br>
+>\# This ensures that a certain set of CMake features is available to<br>
+>\# your build.<br>
+>cmake_minimum_required(VERSION 3.4.1)<br>
+>\# Specifies a library name, specifies whether the library is STATIC or<br>
+>\# SHARED, and provides relative paths to the source code. You can<br>
+>\# define multiple libraries by adding multiple add.library() commands,<br>
+>\# and CMake builds them for you. When you build your app, Gradle<br>
+>\# automatically packages shared libraries with your APK.<br>
+>add_library( # Specifies the name of the library.<br>
 >             native-lib<br>
 >             # Sets the library as a shared library.<br>
 >             SHARED<br>
