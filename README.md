@@ -62,3 +62,12 @@ endless-tunnel(无尽的隧道)是一个纯原生游戏。
 ### sensor-graph
 sensor-graph是利用感应器原生api获得加速度，OpenGL ES 2.0绘图的原生应用示例。
 
+### san-angeles
+OpenGL ES 1.0 3D模型展示。
+
+### native-media
+OpenMAXAL、 java MediaPlayer、native MediaPlayer示例。
+
+### native-codec
+OpenMAXAL mediandk 播放mp4示例。
+
