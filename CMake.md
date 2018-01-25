@@ -52,43 +52,41 @@ MainActivity.onCreate() 调用 stringFromJNI()，这将返回“Hello from C++�
 注：您可以在所需的任意位置创建构建脚本。不过，在配置构建脚本时，原生源文件和库的路径将与构建脚本的位置相关。<br>
 输入“CMakeLists.txt”作为文件名并点击 OK。<br>
 现在，您可以添加 CMake 命令，对您的构建脚本进行配置。要指示 CMake 从原生源代码创建一个原生库，请将 cmake_minimum_required() 和 add_library() 命令添加到您的构建脚本中：<br>
-｀# Sets the minimum version of CMake required to build your native library.
-# This ensures that a certain set of CMake features is available to
-# your build.
+\# Sets the minimum version of CMake required to build your native library.<br>
+\# This ensures that a certain set of CMake features is available to<br>
+\# your build.<br>
+<br>
+cmake_minimum_required(VERSION 3.4.1)<br>
+<br>
+\# Specifies a library name, specifies whether the library is STATIC or<br>
+\# SHARED, and provides relative paths to the source code. You can<br>
+\# define multiple libraries by adding multiple add.library() commands,<br>
+\# and CMake builds them for you. When you build your app, Gradle<br>
+\# automatically packages shared libraries with your APK.<br>
+<br>
+add_library( # Specifies the name of the library.<br>
+             native-lib<br>
+             # Sets the library as a shared library.<br>
+             SHARED<br>
+             # Provides a relative path to your source file(s).<br>
+             src/main/cpp/native-lib.cpp )<br>
+使用 add_library() 向您的 CMake 构建脚本添加源文件或库时，Android Studio 还会在您同步项目后在 Project 视图下显示关联的标头文件。不过，为了确保 CMake 可以在编译时定位您的标头文件，您需要将 include_directories() 命令添加到 CMake 构建脚本中并指定标头的路径：<br>
+<br>
+add_library(...)<br>
+<br>
+\# Specifies a path to native header files.<br>
+include_directories(src/main/cpp/include/)<br>
+CMake 使用以下规范来为库文件命名：<br>
+lib库名称.so<br>
+例如，如果您在构建脚本中指定“native-lib”作为共享库的名称，CMake 将创建一个名称为 libnative-lib.so 的文件。不过，在 Java 代码中加载此库时，请使用您在 CMake 构建脚本中指定的名称：<br>
+<br>
+static {<br>
+    System.loadLibrary(“native-lib”);<br>
+}<br>
+注：如果您在 CMake 构建脚本中重命名或移除某个库，您需要先清理项目，Gradle 随后才会应用更改或者从 APK 中移除旧版本的库。要清理项目，请从菜单栏中选择 Build > Clean Project。<br>
+Android Studio 会自动将源文件和标头添加到 Project 窗格的 cpp 组中。使用多个 add_library() 命令，您可以为 CMake 定义要从其他源文件构建的更多库。<br>
 
-cmake_minimum_required(VERSION 3.4.1)
-
-# Specifies a library name, specifies whether the library is STATIC or
-# SHARED, and provides relative paths to the source code. You can
-# define multiple libraries by adding multiple add.library() commands,
-# and CMake builds them for you. When you build your app, Gradle
-# automatically packages shared libraries with your APK.
-
-add_library( # Specifies the name of the library.
-             native-lib
-             # Sets the library as a shared library.
-             SHARED
-             # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )｀
-使用 add_library() 向您的 CMake 构建脚本添加源文件或库时，Android Studio 还会在您同步项目后在 Project 视图下显示关联的标头文件。不过，为了确保 CMake 可以在编译时定位您的标头文件，您需要将 include_directories() 命令添加到 CMake 构建脚本中并指定标头的路径：
-
-add_library(...)
-
-# Specifies a path to native header files.
-include_directories(src/main/cpp/include/)
-CMake 使用以下规范来为库文件命名：
-
-lib库名称.so
-例如，如果您在构建脚本中指定“native-lib”作为共享库的名称，CMake 将创建一个名称为 libnative-lib.so 的文件。不过，在 Java 代码中加载此库时，请使用您在 CMake 构建脚本中指定的名称：
-
-static {
-    System.loadLibrary(“native-lib”);
-}
-注：如果您在 CMake 构建脚本中重命名或移除某个库，您需要先清理项目，Gradle 随后才会应用更改或者从 APK 中移除旧版本的库。要清理项目，请从菜单栏中选择 Build > Clean Project。
-
-Android Studio 会自动将源文件和标头添加到 Project 窗格的 cpp 组中。使用多个 add_library() 命令，您可以为 CMake 定义要从其他源文件构建的更多库。
-
-添加 NDK API
+### 添加 NDK API
 Android NDK 提供了一套实用的原生 API 和库。通过将 NDK 库包含到项目的 CMakeLists.txt 脚本文件中，您可以使用这些 API 中的任意一种。
 
 预构建的 NDK 库已经存在于 Android 平台上，因此，您无需再构建或将其打包到 APK 中。由于 NDK 库已经是 CMake 搜索路径的一部分，您甚至不需要在您的本地 NDK 安装中指定库的位置 - 只需要向 CMake 提供您希望使用的库的名称，并将其关联到您自己的原生库。
