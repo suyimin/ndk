@@ -62,11 +62,11 @@ cmake_minimum_required(VERSION 3.4.1)<br>
 \# and CMake builds them for you. When you build your app, Gradle<br>
 \# automatically packages shared libraries with your APK.<br>
 add_library( # Specifies the name of the library.<br>
-             >native-lib<br>
-             ># Sets the library as a shared library.<br>
-             >SHARED<br>
-             ># Provides a relative path to your source file(s).<br>
-             >src/main/cpp/native-lib.cpp )<br>
+>             native-lib<br>
+>             # Sets the library as a shared library.<br>
+>             SHARED<br>
+>             # Provides a relative path to your source file(s).<br>
+>             src/main/cpp/native-lib.cpp )<br>
 使用 add_library() 向您的 CMake 构建脚本添加源文件或库时，Android Studio 还会在您同步项目后在 Project 视图下显示关联的标头文件。不过，为了确保 CMake 可以在编译时定位您的标头文件，您需要将 include_directories() 命令添加到 CMake 构建脚本中并指定标头的路径：<br>
 add_library(...)<br>
 \# Specifies a path to native header files.<br>
