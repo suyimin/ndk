@@ -74,5 +74,9 @@ OpenMAXAL mediandk 播放mp4示例。
 ### camera-basic camera-texture
 本地照相机示例。
 
+### display-p3
+Api26新增加的 p3 显示图片和 sRGB 显示图片对比。
 
+### nn_sample
+Api27新增加的 NeuralNetworks Api 示例。
 
