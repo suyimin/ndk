@@ -23,16 +23,22 @@ app是jni示例。
 JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐式 this 对象的指针。
 
 ### hello-jni
+展示了怎样通过 JNI 代码返回一个字符串，在 TextView 中显示。
 
 ### hello-jniCallback
+展示了在 C 代码中怎样调用 java 中的 MainActivity::updateTimer() 和 JniHelper::updateStatus(String msg)。
 
 ### hello-libs
+展示了怎样添加动态库(原生共享库)和静态库(原生静态库)。
 
 ### hello-neno
+展示了怎样使用系统的 native 库。
 
 ### hello-gl2
+展示了怎样使用 OpenGL ES 2.0 原生库。
 
 ### gles3jni
+展示了怎样使用 OpenGL ES 3 原生库。
 
 ### classic-teapot more-teapots choreographer-30fps
 * classic-teapot 普通3D茶壶的示例。<br>
@@ -48,8 +54,10 @@ JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐�
 native是一个纯原生应用示例，不包含任何 Java 源代码。
 Android SDK 提供帮助程序类 NativeActivity，可用于写入完全原生的 Activity。NativeActivity 可处理 Android 框架与原生代码之间的通信，因此您不必为其创建子类或调用其方法， 只需在 AndroidManifest.xml 文件中声明要设为原生的应用，然后开始创建原生应用。<br>
 以下代码行将 android:hasCode 声明为 false，因为此应用仅包含原生代码 – 没有 Java 代码。<br>
-\<application android:label="@string/app_name"
-android:hasCode="false"><br>
+｀｀｀
+<application android:label="@string/app_name"
+             android:hasCode="false">
+｀｀｀
 下一行代码声明 NativeActivity 类。<br>
 \<activity android:name="android.app.NativeActivity"<br>
 最后，清单删掉开头的 lib 和末尾的 .so 扩展名，指定 android:value 作为要构建的共享库的名称。 此值必须与 CMakeLists.txt中 add_library 中配置的名称相同。<br>
