@@ -73,7 +73,7 @@ add_library( # Specifies the name of the library.
 ```
 add_library(...)
 # Specifies a path to native header files.
-include_directories(src/main/cpp/include/)<br>
+include_directories(src/main/cpp/include/)
 ```
 CMake 使用以下规范来为库文件命名：<br>
 lib库名称.so<br>
@@ -90,52 +90,57 @@ Android Studio 会自动将源文件和标头添加到 Project 窗格的 cpp 组
 ### 添加 NDK API
 Android NDK 提供了一套实用的原生 API 和库。通过将 NDK 库包含到项目的 CMakeLists.txt 脚本文件中，您可以使用这些 API 中的任意一种。<br>
 预构建的 NDK 库已经存在于 Android 平台上，因此，您无需再构建或将其打包到 APK 中。由于 NDK 库已经是 CMake 搜索路径的一部分，您甚至不需要在您的本地 NDK 安装中指定库的位置 - 只需要向 CMake 提供您希望使用的库的名称，并将其关联到您自己的原生库。<br>
-将 find_library() 命令添加到您的 CMake 构建脚本中以定位 NDK 库，并将其路径存储为一个变量。您可以使用此变量在构建脚本的其他部分引用 NDK 库。以下示例可以定位 Android 特定的日志支持库并将其路径存储在 log-lib 中：<br>
->find_library( # Defines the name of the path variable that stores the<br>
->              \# location of the NDK library.<br>
->              log-lib<br>
->              \# Specifies the name of the NDK library that<br>
->              \# CMake needs to locate.<br>
->              log )<br>
-
-为了确保您的原生库可以在 log 库中调用函数，您需要使用 CMake 构建脚本中的 target_link_libraries() 命令关联库：<br>
->find_library(...)<br>
->\# Links your native library against one or more other native libraries.<br>
->target_link_libraries( # Specifies the target library.<br>
->                       native-lib<br>
->                       \# Links the log library to the target library.<br>
->                       \${log-lib} )<br>
-
+将 find_library() 命令添加到您的 CMake 构建脚本中以定位 NDK 库，并将其路径存储为一个变量。您可以使用此变量在构建脚本的其他部分引用 NDK 库。以下示例可以定位 Android 特定的日志支持库并将其路径存储在 log-lib 中：
+```
+find_library( # Defines the name of the path variable that stores the
+              # location of the NDK library.
+              log-lib
+              # Specifies the name of the NDK library that
+              # CMake needs to locate.
+              log )
+```
+为了确保您的原生库可以在 log 库中调用函数，您需要使用 CMake 构建脚本中的 target_link_libraries() 命令关联库：
+```
+find_library(...)
+# Links your native library against one or more other native libraries.
+target_link_libraries( # Specifies the target library.
+                       native-lib
+                       # Links the log library to the target library.
+                       ${log-lib} )
+```
 NDK 还以源代码的形式包含一些库，您在构建和关联到您的原生库时需要使用这些代码。您可以使用 CMake 构建脚本中的 add_library() 命令，将源代码编译到原生库中。要提供本地 NDK 库的路径，您可以使用 ANDROID_NDK 路径变量，Android Studio 会自动为您定义此变量。<br>
-以下命令可以指示 CMake 构建 android_native_app_glue.c，后者会将 NativeActivity 生命周期事件和触摸输入置于静态库中并将静态库关联到 native-lib：<br>
->add_library( app-glue<br>
->             STATIC<br>
->             \${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c )<br>
->\# You need to link static libraries against your shared native library.<br>
->target_link_libraries( native-lib app-glue ${log-lib} )<br>
-
+以下命令可以指示 CMake 构建 android_native_app_glue.c，后者会将 NativeActivity 生命周期事件和触摸输入置于静态库中并将静态库关联到 native-lib：
+```
+add_library( app-glue
+             STATIC
+             ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c )
+# You need to link static libraries against your shared native library.
+target_link_libraries( native-lib app-glue ${log-lib} )
+```
 ### 添加其他预构建库
-添加预构建库与为 CMake 指定要构建的另一个原生库类似。不过，由于库已经预先构建，您需要使用 IMPORTED 标志告知 CMake 您只希望将库导入到项目中：<br>
->add_library( imported-lib<br>
->             SHARED<br>
->             IMPORTED )<br>
-
+添加预构建库与为 CMake 指定要构建的另一个原生库类似。不过，由于库已经预先构建，您需要使用 IMPORTED 标志告知 CMake 您只希望将库导入到项目中：
+```
+add_library( imported-lib
+             SHARED
+             IMPORTED )
+```
 然后，您需要使用 set_target_properties() 命令指定库的路径，如下所示。<br>
-某些库为特定的 CPU 架构（或应用二进制接口 (ABI)）提供了单独的软件包，并将其组织到单独的目录中。此方法既有助于库充分利用特定的 CPU 架构，又能让您仅使用所需的库版本。要向 CMake 构建脚本中添加库的多个 ABI 版本，而不必为库的每个版本编写多个命令，您可以使用 ANDROID_ABI 路径变量。此变量使用 NDK 支持的一组默认 ABI，或者您手动配置 Gradle 而让其使用的一组经过筛选的 ABI。例如：<br>
->add_library(...)<br>
->set_target_properties( # Specifies the target library.<br>
->                       imported-lib<br>
->                       \# Specifies the parameter you want to define.<br>
->                       PROPERTIES IMPORTED_LOCATION<br>
->                       \# Provides the path to the library you want to import.<br>
->                       imported-lib/src/${ANDROID_ABI}/libimported-lib.so )<br>
-
-为了确保 CMake 可以在编译时定位您的标头文件，您需要使用 include_directories() 命令，并包含标头文件的路径：<br>
->include_directories( imported-lib/include/ )<br>
+某些库为特定的 CPU 架构（或应用二进制接口 (ABI)）提供了单独的软件包，并将其组织到单独的目录中。此方法既有助于库充分利用特定的 CPU 架构，又能让您仅使用所需的库版本。要向 CMake 构建脚本中添加库的多个 ABI 版本，而不必为库的每个版本编写多个命令，您可以使用 ANDROID_ABI 路径变量。此变量使用 NDK 支持的一组默认 ABI，或者您手动配置 Gradle 而让其使用的一组经过筛选的 ABI。例如：
+```
+add_library(...)
+set_target_properties( # Specifies the target library.
+                       imported-lib
+                       # Specifies the parameter you want to define.
+                       PROPERTIES IMPORTED_LOCATION
+                       # Provides the path to the library you want to import.
+                       imported-lib/src/${ANDROID_ABI}/libimported-lib.so )
+```
+为了确保 CMake 可以在编译时定位您的标头文件，您需要使用 include_directories() 命令，并包含标头文件的路径：
+`include_directories( imported-lib/include/ )`
 
 注：如果您希望打包一个并不是构建时依赖项的预构建库（例如在添加属于 imported-lib 依赖项的预构建库时），则不需要执行以下说明来关联库。<br>
-要将预构建库关联到您自己的原生库，请将其添加到 CMake 构建脚本的 target_link_libraries() 命令中：<br>
->target_link_libraries( native-lib imported-lib app-glue ${log-lib} )<br>
+要将预构建库关联到您自己的原生库，请将其添加到 CMake 构建脚本的 target_link_libraries() 命令中：
+`target_link_libraries( native-lib imported-lib app-glue ${log-lib} )`
 
 在您构建应用时，Gradle 会自动将导入的库打包到 APK 中。您可以使用 APK 分析器验证 Gradle 将哪些库打包到您的 APK 中。<br>
 
@@ -145,96 +150,99 @@ NDK 还以源代码的形式包含一些库，您在构建和关联到您的原�
 注：更改 Gradle 配置时，请确保通过点击工具栏中的 Sync Project  应用更改。此外，如果在将 CMake 脚本文件关联到 Gradle 后再对其进行更改，您应当从菜单栏中选择 Build > Refresh Linked C++ Projects，将 Android Studio 与您的更改同步。<br>
 
 #### 手动配置 Gradle
-要手动配置 Gradle 以关联到您的原生库，您需要将 externalNativeBuild {} 块添加到模块级 build.gradle 文件中，并使用 cmake {} 对其进行配置：<br>
->android {<br>
->  ...<br>
->  defaultConfig {...}<br>
->  buildTypes {...}<br>
->  // Encapsulates your external native build configurations.<br>
->  externalNativeBuild {<br>
->    // Encapsulates your CMake build configurations.<br>
->    cmake {<br>
->      // Provides a relative path to your CMake build script.<br>
->      path "CMakeLists.txt"<br>
->    \}<br>
->  \}<br>
->\}<br>
-
+要手动配置 Gradle 以关联到您的原生库，您需要将 externalNativeBuild {} 块添加到模块级 build.gradle 文件中，并使用 cmake {} 对其进行配置：
+```
+android {
+  ...
+  defaultConfig {...}
+  buildTypes {...}
+  // Encapsulates your external native build configurations.
+  externalNativeBuild {
+    // Encapsulates your CMake build configurations.
+    cmake {
+      // Provides a relative path to your CMake build script.
+      path "CMakeLists.txt"
+    }
+  }
+}
+```
 #### 指定可选配置
 您可以在模块级 build.gradle 文件的 defaultConfig {} 块中配置另一个 externalNativeBuild {} 块，为 CMake 指定可选参数和标志。与 defaultConfig {} 块中的其他属性类似，您也可以在构建配置中为每个产品风味重写这些属性。<br>
-例如，如果您的 CMake 项目定义多个原生库，您可以使用 targets 属性仅为给定产品风味构建和打包这些库中的一部分。以下代码示例说明了您可以配置的部分属性：<br>
->android {<br>
->  ...<br>
->  defaultConfig {<br>
->    ...<br>
->    // This block is different from the one you use to link Gradle<br>
->    // to your CMake or ndk-build script.<br>
->    externalNativeBuild {<br>
->      // For ndk-build, instead use ndkBuild {}<br>
->      cmake {<br>
->        // Passes optional arguments to CMake.<br>
->        arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"<br>
->        // Sets optional flags for the C compiler.<br>
->        cFlags "-D_EXAMPLE_C_FLAG1", "-D_EXAMPLE_C_FLAG2"<br>
->        // Sets a flag to enable format macro constants for the C++ compiler.<br>
->        cppFlags "-D__STDC_FORMAT_MACROS"<br>
->      \}<br>
->    \}<br>
->  \}<br>
->  buildTypes {...}<br>
->  productFlavors {<br>
->    ...<br>
->    demo {<br>
->      ...<br>
->      externalNativeBuild {<br>
->        cmake {<br>
->          ...<br>
->          // Specifies which native libraries to build and package for this<br>
->          // product flavor. If you don't configure this property, Gradle<br>
->          // builds and packages all shared object libraries that you define<br>
->          // in your CMake or ndk-build project.<br>
->          targets "native-lib-demo"<br>
->        }<br>
->      }<br>
->    }<br>
->    paid {<br>
->      ...<br>
->      externalNativeBuild {<br>
->        cmake {<br>
->          ...<br>
->          targets "native-lib-paid"<br>
->        }<br>
->      }<br>
->    }<br>
->  }<br>
->  // Use this block to link Gradle to your CMake or ndk-build script.<br>
->  externalNativeBuild {<br>
->    cmake {...}<br>
->    // or ndkBuild {...}<br>
->  }<br>
->}<br>
-
+例如，如果您的 CMake 项目定义多个原生库，您可以使用 targets 属性仅为给定产品风味构建和打包这些库中的一部分。以下代码示例说明了您可以配置的部分属性：
+```
+android {
+  ...
+  defaultConfig {
+    ...
+    // This block is different from the one you use to link Gradle
+    // to your CMake or ndk-build script.
+    externalNativeBuild {
+      // For ndk-build, instead use ndkBuild {}
+      cmake {
+        // Passes optional arguments to CMake.
+        arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"
+        // Sets optional flags for the C compiler.
+        cFlags "-D_EXAMPLE_C_FLAG1", "-D_EXAMPLE_C_FLAG2"
+        // Sets a flag to enable format macro constants for the C++ compiler.
+        cppFlags "-D__STDC_FORMAT_MACROS"
+      }
+    }
+  }
+  buildTypes {...}
+  productFlavors {
+    ...
+    demo {
+      ...
+      externalNativeBuild {
+        cmake {
+          ...
+          // Specifies which native libraries to build and package for this
+          // product flavor. If you don't configure this property, Gradle
+          // builds and packages all shared object libraries that you define
+          // in your CMake or ndk-build project.
+          targets "native-lib-demo"
+        }
+      }
+    }
+    paid {
+      ...
+      externalNativeBuild {
+        cmake {
+          ...
+          targets "native-lib-paid"
+        }
+      }
+    }
+  }
+  // Use this block to link Gradle to your CMake or ndk-build script.
+  externalNativeBuild {
+    cmake {...}
+    // or ndkBuild {...}
+  }
+}
+```
 #### 指定 ABI
-默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：<br>
->android {<br>
->  ...<br>
->  defaultConfig {<br>
->    ...<br>
->    externalNativeBuild {<br>
->      cmake {...}<br>
->      // or ndkBuild {...}<br>
->    \}<br>
->    ndk {<br>
->      // Specifies the ABI configurations of your native<br>
->      // libraries Gradle should build and package with your APK.<br>
->      abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',<br>
->                   'arm64-v8a'<br>
->    \}<br>
->  \}<br>
->  buildTypes {...}<br>
->  externalNativeBuild {...}<br>
->}<br>
-
+默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：
+```
+android {
+  ...
+  defaultConfig {
+    ...
+    externalNativeBuild {
+      cmake {...}
+      // or ndkBuild {...}
+    }
+    ndk {
+      // Specifies the ABI configurations of your native
+      // libraries Gradle should build and package with your APK.
+      abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
+                   'arm64-v8a'
+    }
+  }
+  buildTypes {...}
+  externalNativeBuild {...}
+}
+```
 在大多数情况下，您只需要在 ndk {} 块中指定 abiFilters（如上所示），因为它会指示 Gradle 构建和打包原生库的这些版本。不过，如果您希望控制 Gradle 应当构建的配置，并独立于您希望其打包到 APK 中的配置，请在 defaultConfig.externalNativeBuild.cmake {} 块（或 defaultConfig.externalNativeBuild.ndkBuild {} 块中）配置另一个 abiFilters 标志。Gradle 会构建这些 ABI 配置，不过仅会打包您在 defaultConfig.ndk{} 块中指定的配置。<br>
 为了进一步降低 APK 的大小，请考虑配置 ABI APK 拆分，而不是创建一个包含原生库所有版本的大型 APK，Gradle 会为您想要支持的每个 ABI 创建单独的 APK，并且仅打包每个 ABI 需要的文件。如果您配置 ABI 拆分，但没有像上面的代码示例一样指定 abiFilters 标志，Gradle 会构建原生库的所有受支持 ABI 版本，不过仅会打包您在 ABI 拆分配置中指定的版本。为了避免构建您不想要的原生库版本，请为 abiFilters 标志和 ABI 拆分配置提供相同的 ABI 列表。<br>
 
