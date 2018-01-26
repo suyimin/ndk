@@ -53,16 +53,18 @@ JNIEnv* 是指向虚拟机的指针，jobject 是指向从 Java 端传递的隐�
 ### native
 native是一个纯原生应用示例，不包含任何 Java 源代码。
 Android SDK 提供帮助程序类 NativeActivity，可用于写入完全原生的 Activity。NativeActivity 可处理 Android 框架与原生代码之间的通信，因此您不必为其创建子类或调用其方法， 只需在 AndroidManifest.xml 文件中声明要设为原生的应用，然后开始创建原生应用。<br>
-以下代码行将 android:hasCode 声明为 false，因为此应用仅包含原生代码 – 没有 Java 代码。<br>
+以下代码行将 android:hasCode 声明为 false，因为此应用仅包含原生代码 – 没有 Java 代码。
 ```xml
 <application android:label="@string/app_name"
              android:hasCode="false">
 ```
-下一行代码声明 NativeActivity 类。<br>
-\<activity android:name="android.app.NativeActivity"<br>
+下一行代码声明 NativeActivity 类。
+`<activity android:name="android.app.NativeActivity"`
 最后，清单删掉开头的 lib 和末尾的 .so 扩展名，指定 android:value 作为要构建的共享库的名称。 此值必须与 CMakeLists.txt中 add_library 中配置的名称相同。<br>
-\<meta-data android:name="android.app.lib_name"
-        android:value="native-activity" /><br>
+```xml
+<meta-data android:name="android.app.lib_name"
+           android:value="native-activity" />
+```
 创建用于原生 Activity 的文件，并实现 ANativeActivity_onCreate 变量中指定的函数void android_main(struct android_app* state)。应用在原生 Activity 启动时会调用此函数。 此函数类似于 C/C++ 中的 main，用于接收 ANativeActivity 结构的指针，其中包含您需要写入的各个回调实现的函数指针。<br>
 
 ### audio-echo native-audio
